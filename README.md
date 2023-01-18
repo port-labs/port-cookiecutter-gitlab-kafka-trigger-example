@@ -119,7 +119,6 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
 ```
 
 2. Create new actions for blueprint (replace instances of `<WEBHOOK_URL>`):
-<details><summary>Click to expand</summary>
 
 ```
 [
@@ -218,7 +217,6 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
     }
 ]
 ```
-</details>
 
 3. Run the action with some input (replace `<OUTPUT_GITHUB_ORG>`, `<OUTPUT_GITHUB_REPO>`):
 ```
