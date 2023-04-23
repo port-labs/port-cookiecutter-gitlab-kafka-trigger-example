@@ -1,6 +1,6 @@
 <img align="right" src="https://user-images.githubusercontent.com/8277210/183290078-f38cdfd2-e5da-4562-82e6-f274d0330825.svg#gh-dark-mode-only" width="100" height="74" /> <img align="right" width="100" height="74" src="https://user-images.githubusercontent.com/8277210/183290025-d7b24277-dfb4-4ce1-bece-7fe0ecd5efd4.svg#gh-light-mode-only" />
 
-# port-cookiecutter-example
+# port-cookiecutter-gitlab-example
 
 [![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)](https://join.slack.com/t/devex-community/shared_invite/zt-1bmf5621e-GGfuJdMPK2D8UN58qL4E_g)
 
@@ -44,7 +44,9 @@ $ cat .env
 
 PORT_CLIENT_ID=<PORT_CLIENT_ID>
 PORT_CLIENT_SECRET=<PORT_CLIENT_SECRET>
-GITLAB_ACCESS_TOKEN=<GH_ACCESS_TOKEN>
+GITLAB_ACCESS_TOKEN=<GITLAB_ACCESS_TOKEN>
+gitlab.com=<For example gitlab.com>
+GITLAB_GROUP_NAME=<YOUR_GROUP>
 ```
 
 Make sure your `GITLAB_ACCESS_TOKEN` has relevant scopes for create new repository in your organization, and push to it.
@@ -54,19 +56,19 @@ Make sure your `GITLAB_ACCESS_TOKEN` has relevant scopes for create new reposito
 
 3. Build example's Docker image
 ```
-$ docker build -t getport.io/port-cookiecutter-example .
+$ docker build -t getport.io/port-cookiecutter-gitlab-example .
 ```
 
 4. Run example's Docker image with `.env`
 
 To change the default port (`80`) to `8080` for example, replace command's flags with the following: `-p 80:8080 -e PORT="8080"`
 ```
-$ docker run -d --name getport.io-port-cookiecutter-example -p 80:80 --env-file .env getport.io/port-cookiecutter-example
+$ docker run -d --name getport.io-port-cookiecutter-gitlab-example -p 80:80 --env-file .env getport.io/port-cookiecutter-gitlab-example
 ```
 
 5. Verify that the Docker container is up and running, and ready to listen for new webhooks:
 ```
-$ docker logs -f getport.io-port-cookiecutter-example
+$ docker logs -f getport.io-port-cookiecutter-gitlab-example
 
 ...
 [2022-09-18 12:17:17 +0000] [1] [INFO] Starting gunicorn 20.1.0
@@ -100,8 +102,8 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
 1. Create `Service` blueprint:
 ```
 {
-    "identifier": "service",
-    "title": "Service",
+    "identifier": "microservice",
+    "title": "Microservice",
     "icon": "Service",
     "schema": {
         "properties": {
@@ -131,10 +133,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
         "icon": "Service",
         "userInputs": {
             "properties": {
-                "github_organization": {
-                    "type": "string"
-                },
-                "github_repository": {
+                "repository_name": {
                     "type": "string"
                 },
                 "project_name": {
@@ -145,8 +144,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
                 }
             },
             "required": [
-                "github_organization",
-                "github_repository"
+                "repository_name"
             ]
         },
         "invocationMethod": {
@@ -162,10 +160,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
         "icon": "Service",
         "userInputs": {
             "properties": {
-                "github_organization": {
-                    "type": "string"
-                },
-                "github_repository": {
+                "repository_name": {
                     "type": "string"
                 },
                 "project_name": {
@@ -176,8 +171,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
                 }
             },
             "required": [
-                "github_organization",
-                "github_repository"
+                "repository_name"
             ]
         },
         "invocationMethod": {
@@ -193,10 +187,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
         "icon": "Service",
         "userInputs": {
             "properties": {
-                "github_organization": {
-                    "type": "string"
-                },
-                "github_repository": {
+                "repository_name": {
                     "type": "string"
                 },
                 "app_name": {
@@ -207,8 +198,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
                 }
             },
             "required": [
-                "github_organization",
-                "github_repository"
+                "repository_name"
             ]
         },
         "invocationMethod": {
@@ -221,11 +211,10 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
 ]
 ```
 
-3. Run the action with some input (replace `<OUTPUT_GITHUB_ORG>`, `<OUTPUT_GITHUB_REPO>`):
+3. Run the action with some input (replace `<OUTPUT_GITLAB_REPO>`):
 ```
 {
-  "github_organization": "<OUTPUT_GITHUB_ORG>",
-  "github_repository": "<OUTPUT_GITHUB_REPO>",
+  "repository_name": "<OUTPUT_GITLAB_REPO>",
   "project_name": "new-django-service",
   "description": "New Django Service"
 }
