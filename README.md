@@ -44,10 +44,13 @@ $ cat .env
 
 PORT_CLIENT_ID=<PORT_CLIENT_ID>
 PORT_CLIENT_SECRET=<PORT_CLIENT_SECRET>
-GH_ACCESS_TOKEN=<GH_ACCESS_TOKEN>
+GITLAB_ACCESS_TOKEN=<GH_ACCESS_TOKEN>
 ```
 
-Make sure your `GH_ACCESS_TOKEN` has relevant scopes for create new repository in your organization, and push to it.
+Make sure your `GITLAB_ACCESS_TOKEN` has relevant scopes for create new repository in your organization, and push to it.
+
+![image](https://user-images.githubusercontent.com/51213812/233837042-afda1f2b-5fb6-4e86-8469-9b78552ff1c7.png)
+
 
 3. Build example's Docker image
 ```
