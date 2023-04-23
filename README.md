@@ -6,9 +6,6 @@
 
 Port is the Developer Platform meant to supercharge your DevOps and Developers, and allow you to regain control of your environment.
 
-## Docs
-
-- [Port Docs](https://docs.getport.io/tutorials/complete-use-cases/software-templates)
 
 ## Description
 
