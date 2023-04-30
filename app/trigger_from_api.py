@@ -7,7 +7,7 @@ from core.config import settings
 
 uuid_str = str(uuid.uuid4())
 
-print(uuid_str)
+print(uuid_str.replace('-', ''))
 
 
 def get_access_token(client_id: str, client_secret: str) -> str:
