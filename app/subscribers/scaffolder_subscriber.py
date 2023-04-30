@@ -1,26 +1,30 @@
 import logging
-from fastapi import APIRouter, Depends
 
+from kafka.consumer import KafkaConsumer
 from mappings import ACTION_ID_TO_CLASS_MAPPING
-from api.deps import verify_webhook
 from clients import port
 from core.config import settings
-from schemas.webhook import Webhook
+from schemas.data import Data
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+
+def start() -> None:
+    logger.info("Starting Scaffolder Subscriber")
+    consumer = KafkaConsumer(msg_process=handle_create_service)
+
+    consumer.start()
 
 
-@router.post("/service", dependencies=[Depends(verify_webhook)])
-async def handle_create_service_webhook(webhook: Webhook):
-    logger.info(f"Webhook body: {webhook}")
-    action_type = webhook.payload['action']['trigger']
-    action_identifier = webhook.payload['action']['identifier']
-    properties = webhook.payload['properties']
+def handle_create_service(data: Data):
+    logger.info(f"data body: {data}")
+
+    action_type = data['payload']['action']['trigger']
+    action_identifier = data['payload']['action']['identifier']
+    properties = data['payload']['properties']
     repo = properties.pop('repository_name')
-    run_id = webhook.context.runId
+    run_id = data['context']['runId']
 
     if action_type == 'CREATE':
         logger.info(f"{action_identifier} - create new service")

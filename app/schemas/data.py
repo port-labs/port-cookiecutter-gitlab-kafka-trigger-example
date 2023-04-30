@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class Webhook(BaseModel):
+class Data(BaseModel):
     class Context(BaseModel):
         blueprint: Optional[str]
         entity: Optional[str]

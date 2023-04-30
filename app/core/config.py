@@ -19,8 +19,15 @@ class Settings(BaseSettings):
     COOKIECUTTER_CPP_URL: str = "https://github.com/DerThorsten/cpp_cookiecutter"
     COOKIECUTTER_OUTPUT_DIR: str = "cookiecutter_output/{uuid}"
 
-    class Config:
-        case_sensitive = True
+    KAFKA_USER: str
+    KAFKA_PASSWORD: str
+    KAFKA_BOOTSTRAP_SERVERS: str = "b-1-public.publicclusterprod.t9rw6w.c1.kafka.eu-west-1.amazonaws.com: 9196, b-2-public.publicclusterprod.t9rw6w.c1.kafka.eu-west-1.amazonaws.com: 9196, b-3-public.publicclusterprod.t9rw6w.c1.kafka.eu-west-1.amazonaws.com: 9196"
+    KAFKA_RUNS_TOPIC: str
+    KAFKA_CONSUMER_AUTO_OFFSET_RESET: str = "earliest"
+
+
+class Config:
+    case_sensitive = True
 
 
 settings = Settings()

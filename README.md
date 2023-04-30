@@ -1,6 +1,6 @@
 <img align="right" src="https://user-images.githubusercontent.com/8277210/183290078-f38cdfd2-e5da-4562-82e6-f274d0330825.svg#gh-dark-mode-only" width="100" height="74" /> <img align="right" width="100" height="74" src="https://user-images.githubusercontent.com/8277210/183290025-d7b24277-dfb4-4ce1-bece-7fe0ecd5efd4.svg#gh-light-mode-only" />
 
-# port-cookiecutter-gitlab-example
+# port-cookiecutter-gitlab-kafka-trigger-example
 
 [![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)](https://join.slack.com/t/devex-community/shared_invite/zt-1bmf5621e-GGfuJdMPK2D8UN58qL4E_g)
 
@@ -11,24 +11,13 @@ Port is the Developer Platform meant to supercharge your DevOps and Developers, 
 
 The following example creates service GitHub repository from Cookiecutter repository.
 
-This example consists of a FastAPI backend, that listen for Port Action Webhook events.
+This example consists of a Kafka consumer backend, that listen for Port Action events.
 
 For each event, the backend creates new project using Cookiecutter, and new GitHub repository to host the project.
 
-Finally, the backend creates new Port Entity for `Service` blueprint, and updates Port Action run.
+Finally, the backend creates new Port Entity for `microservice` blueprint, and updates Port Action run.
 
-## Table of Contents
-1. [Local Setup](#Localhost)
-2. [Webhook Setup](#Webhook)
-3. [Port Setup](#Port)
-
-## Diagram
-
-![diagram.png](diagram.png)
-
-## Setup
-
-### Localhost
+### Docker
 
 1. Make sure that the Docker daemon is available and running
 ```
@@ -44,6 +33,9 @@ PORT_CLIENT_SECRET=<PORT_CLIENT_SECRET>
 GITLAB_ACCESS_TOKEN=<GITLAB_ACCESS_TOKEN>
 gitlab.com=<For example gitlab.com>
 GITLAB_GROUP_NAME=<YOUR_GROUP>
+KAFKA_USER=<YOUR_USERNAME>
+KAFKA_PASSWORD=<YOUR_PASSWORD>
+KAFKA_RUNS_TOPIC=<YOUR_TOPIC>
 ```
 
 Make sure your `GITLAB_ACCESS_TOKEN` has relevant scopes for create new repository in your organization, and push to it.
@@ -53,50 +45,34 @@ Make sure your `GITLAB_ACCESS_TOKEN` has relevant scopes for create new reposito
 
 3. Build example's Docker image
 ```
-$ docker build -t getport.io/port-cookiecutter-gitlab-example .
+$ docker build -t getport.io/port-cookiecutter-gitlab-kafka-trigger-example .
 ```
 
 4. Run example's Docker image with `.env`
 
 To change the default port (`80`) to `8080` for example, replace command's flags with the following: `-p 80:8080 -e PORT="8080"`
 ```
-$ docker run -d --name getport.io-port-cookiecutter-gitlab-example -p 80:80 --env-file .env getport.io/port-cookiecutter-gitlab-example
+$ docker run -d --name getport.io-port-cookiecutter-gitlab-kafka-trigger-example --env-file .env getport.io/port-cookiecutter-gitlab-kafka-trigger-example
 ```
 
 5. Verify that the Docker container is up and running, and ready to listen for new webhooks:
 ```
-$ docker logs -f getport.io-port-cookiecutter-gitlab-example
-
+$ docker logs -f getport.io-port-cookiecutter-gitlab-kafka-trigger-example
+```
+```
 ...
-[2022-09-18 12:17:17 +0000] [1] [INFO] Starting gunicorn 20.1.0
-[2022-09-18 12:17:17 +0000] [1] [INFO] Listening at: http://0.0.0.0:80 (1)
-[2022-09-18 12:17:17 +0000] [1] [INFO] Using worker: uvicorn.workers.UvicornWorker
-[2022-09-18 12:17:17 +0000] [10] [INFO] Booting worker with pid: 10
+INFO:subscribers.scaffolder_subscriber:Starting Scaffolder Subscriber
+INFO:kafka.consumer:Assignment: [TopicPartition{topic=org_yWVmPI3kZZgxNBvj.runs,partition=0,offset=-1001,leader_epoch=None,error=None}]
 ...
-[2022-09-18 12:17:19 +0000] [18] [INFO] Application startup complete.
 ```
 
+```
 `docker logs -f` command follows log output, and helps you also to troubleshoot future action runs.
-
-### Webhook
-
-1. Create public URL for your local application. 
-
-In this tutorial, we create a new channel in [smee.io](https://smee.io/), and use provided `Webhook Proxy URL`. 
-
-2. Install the Smee client:
-```
-$ pip install pysmee
-```
-
-3. Use installed `pysmee` client to forward the events to your localhost API URL (replace `<SMEE_WEBHOOK_PROXY_URL>`):
-```
-pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
 ```
 
 ### Port
 
-1. Create `Service` blueprint:
+1. Create `microservice` blueprint:
 ```
 {
     "identifier": "microservice",
@@ -116,11 +92,12 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
         },
         "required": []
     },
-    "mirrorProperties": {}
+    "mirrorProperties": {},
+    "calculationProperties": {}
 }
 ```
 
-2. Create new actions for blueprint (replace instances of `<WEBHOOK_URL>`):
+2. Create new actions for blueprint:
 
 ```
 [
@@ -145,8 +122,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
             ]
         },
         "invocationMethod": {
-            "type": "WEBHOOK",
-            "url": "<WEBHOOK_URL>"
+            "type": "KAFKA"
         },
         "trigger": "CREATE",
         "description": "Creates a new Django service"
@@ -172,8 +148,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
             ]
         },
         "invocationMethod": {
-            "type": "WEBHOOK",
-            "url": "<WEBHOOK_URL>"
+            "type": "KAFKA"
         },
         "trigger": "CREATE",
         "description": "Creates a new C++ service"
@@ -199,8 +174,7 @@ pysmee forward <SMEE_WEBHOOK_PROXY_URL> http://localhost:80/api/service
             ]
         },
         "invocationMethod": {
-            "type": "WEBHOOK",
-            "url": "<WEBHOOK_URL>"
+            "type": "KAFKA"
         },
         "trigger": "CREATE",
         "description": "Creates a new Go service"
